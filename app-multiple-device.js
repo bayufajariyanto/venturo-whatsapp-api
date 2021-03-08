@@ -82,15 +82,15 @@ const createSession = function(id, description) {
 
   client.on('qr', (qr) => {
     qrcode.toDataURL(qr, (err, url) => {
-      console.log('QR RECEIVED', url);
+      console.log('KODE QR TELAH DITERIMA', url);
       io.emit('qr', { id: id, src: url });
-      io.emit('message', { id: id, text: 'QR Code received, scan please!' });
+      io.emit('message', { id: id, text: "Kode QR telah diterima, silakan scan" });
     });
   });
 
   client.on('ready', () => {
     io.emit('ready', { id: id });
-    io.emit('message', { id: id, text: 'Whatsapp is ready!' });
+    io.emit('message', { id: id, text: 'WhatsApp siap digunakan' });
 
     const savedSessions = getSessionsFile();
     const sessionIndex = savedSessions.findIndex(sess => sess.id == id);
@@ -100,7 +100,7 @@ const createSession = function(id, description) {
 
   client.on('authenticated', (session) => {
     io.emit('authenticated', { id: id });
-    io.emit('message', { id: id, text: 'Whatsapp is authenticated!' });
+    io.emit('message', { id: id, text: 'WhatsApp diautentikasi!' });
     sessionCfg = session;
     fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), function(err) {
       if (err) {
@@ -110,14 +110,14 @@ const createSession = function(id, description) {
   });
 
   client.on('auth_failure', function(session) {
-    io.emit('message', { id: id, text: 'Auth failure, restarting...' });
+    io.emit('message', { id: id, text: 'Autentikasi gagal, mulai ulang...' });
   });
 
   client.on('disconnected', (reason) => {
-    io.emit('message', { id: id, text: 'Whatsapp is disconnected!' });
+    io.emit('message', { id: id, text: 'WhatsApp Terputus!' });
     fs.unlinkSync(SESSION_FILE_PATH, function(err) {
         if(err) return console.log(err);
-        console.log('Session file deleted!');
+        console.log('File sesi dihapus!');
     });
     client.destroy();
     client.initialize();
@@ -129,6 +129,11 @@ const createSession = function(id, description) {
     setSessionsFile(savedSessions);
 
     io.emit('remove-session', id);
+  });
+  client.on('change_battery', (batteryInfo) => {
+    // Battery percentage for attached device has changed
+    const { battery, plugged } = batteryInfo;
+    console.log(`Battery: ${battery}% - Charging? ${plugged}`);
   });
 
   // Tambahkan client ke sessions
