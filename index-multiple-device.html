@@ -27,9 +27,9 @@
 	<div id="app" class="container mt-5">
 		<h1>Venturo WhatsApp API</h1>
 		<div class="form-container">
-			<label for="client-id">ID (dilarang menggunakan angka di depan ex. 1property)</label><br>
+			<label for="client-id">ID</label><br>
 			<input type="text" id="client-id" placeholder="property ..." class="form-control">
-			<small>*Gunakan string sebagai id (sender)</small>
+			<small class="text-muted">Dilarang menggunakan angka di depan misal. 1property</small>
 			<br><br>
 			<label for="client-description">Deskripsi</label><br>
 			<textarea rows="3" id="client-description" placeholder="Masukkan deskripsi"
@@ -40,7 +40,7 @@
 		<hr>
 		<div class="client-container">
 			<div class="client hide card">
-				<h3 class="title"></h3>
+				<h3 class="title"></h3> (*gunakan id ini sebagai sender )
 				<p class="description"></p>
 				<img src="" alt="QR Code" id="qrcode">
 				<p id="qr"></p>
@@ -104,9 +104,7 @@
 			});
 
 			socket.on('qr', function(data) {
-				console.log(data);
 				$(`.client.${data.id} #qrcode`).attr('src', data.src);
-				$(`.client.${data.id} #qr`).text('src', data.src);
 				$(`.client.${data.id} #qrcode`).show();
 			});
 
