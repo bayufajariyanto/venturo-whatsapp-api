@@ -1,30 +1,46 @@
 <?php
 
-if (isset($_POST["nomor"])) {
+if (isset($_POST["nomor"]) && isset($_POST['sender'])) {
     $nomor = $_POST["nomor"];
+    $sender = $_POST["sender"];
     $data = [
+        "sender" => $sender,
         "nomor" => $nomor
     ];
     $data_string = json_encode($data);
-    $url = 'http://localhost:3000/cek-nomor';
-    $proxy = 'localhost:3000';
-    //$proxyauth = 'user:password';
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_PROXY, $proxy);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    // curl_setopt($ch, CURLOPT_HEADER, 1);
+    $url = "https://venturo-whatsapp.herokuapp.com/cek-nomor";
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    // curl_setopt($curl, CURLOPT_TIMEOUT, 1000);
     $start_time = time();
-    $result = curl_exec($ch);
-    curl_close($ch);
-    $result = json_decode($result);
+    $res = curl_exec($curl);
+    curl_close($curl);
+    $result = json_decode($res);
     $end_time = time();
     $hasil = $end_time - $start_time;
-    // var_dump(json_decode($result));
+    var_dump($result);
+    var_dump($hasil);
+    // $url = 'http://localhost:3000/cek-nomor';
+    // $proxy = 'localhost:3000';
+    //$proxyauth = 'user:password';
+
+    // $ch = curl_init();
+    // curl_setopt($ch, CURLOPT_URL, $url);
+    // curl_setopt($ch, CURLOPT_PROXY, $proxy);
+    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    // curl_setopt($ch, CURLOPT_POST, true);
+    // curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+    // curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    // $start_time = time();
+    // $result = curl_exec($ch);
+    // curl_close($ch);
+    // $result = json_decode($result);
+    // $end_time = time();
+    // $hasil = $end_time - $start_time;
 }
 ?>
 <!doctype html>
@@ -65,6 +81,11 @@ if (isset($_POST["nomor"])) {
                 <div class="form-floating">
                     <label for="floatingTextarea2">Input Nomor</label>
                     <textarea name="nomor" class="form-control" placeholder="Masukkan nomor disini" id="floatingTextarea2" style="height: 400px" autofocus></textarea>
+                </div>
+                <div class="form-floating mt-3">
+                    <label for="sender">Sender</label>
+                    <input name="sender" class="form-control" placeholder="Masukkan ID" id="sender"/>
+                    <small class="text-muted">Sender harus sesuai dengan ID di https://venturo-whatsapp.herokuapp.com/</small>
                 </div>
                 <button type="submit" class="btn btn-primary mt-4">Cek Nomor</button>
             </form>
